@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type Form from '$lib/Form';
+    import type { Form } from '$lib';
     import { type Fields, countryChoices } from './Address';
-    import FieldErrors from '$lib/components/FieldErrors.svelte';
-    import InputRequiredText from '$lib/components//InputRequiredText.svelte';
-    import InputText from '$lib/components//InputText.svelte';
-    import Row from '$lib/components/Row.svelte';
-    import Choice, { optionalChoices } from '$lib/components/Choice.svelte';
+    import FieldErrors from '$lib/examples/FieldErrors.svelte';
+    import InputRequiredText from '$lib/examples/InputRequiredText.svelte';
+    import InputText from '$lib/examples/InputText.svelte';
+    import Row from '$lib/examples/Row.svelte';
+    import Choice, { optionalChoices } from '$lib/examples/Choice.svelte';
 
     type TValues = $$Generic;
 

@@ -1,11 +1,9 @@
 import trim from 'lodash/trim';
 import defaultTo from 'lodash/defaultTo';
-import Form from '$lib/Form';
-import { createRoot, createListItem, createProperties } from '$lib/Field';
-import type { Field, FormState, TypeToFields } from '$lib/Types';
+import { Form, createRoot, createListItem, createProperties, createDebouncedValidator } from '$lib';
+import type { Field, FormState, TypeToFields } from '$lib';
 import * as address from './Address';
-import type { Choice } from '$lib/components/Choice.svelte';
-import { createDebouncedValidator } from '$lib/AsyncValidatorUtils';
+import type { Choice } from '$lib/examples/Choice.svelte';
 
 type Gender = 'm' | 'f';
 export const genderChoices: Choice<Gender>[] = [

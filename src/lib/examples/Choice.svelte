@@ -15,9 +15,8 @@
 </script>
 
 <script lang="ts">
-    import type Form from '$lib/Form';
-    import type { Field } from '$lib/Types';
-    import cx from './cx';
+    import type { Form, Field } from '$lib';
+    import { cx } from './cx';
 
     type TValues = $$Generic;
     type TValue = $$Generic;

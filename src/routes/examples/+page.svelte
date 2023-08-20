@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type Form from '$lib/Form';
+    import type { Form } from '$lib';
     import type { PageData } from './$types';
     import type { User } from './form/User';
     import UserForm from './form/UserForm.svelte';

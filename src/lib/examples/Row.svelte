@@ -1,6 +1,5 @@
 <script lang="ts">
-    import type Form from '$lib/Form';
-    import type { Field } from '$lib/Types';
+    import type { Form, Field } from '$lib';
     import { fade } from 'svelte/transition';
     import FieldErrors from './FieldErrors.svelte';
 

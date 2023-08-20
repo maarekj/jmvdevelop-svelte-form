@@ -1,6 +1,6 @@
 import debounce from 'lodash/debounce';
 import type { AsyncValidator } from './Form';
-import type Form from './Form';
+import type { Form } from './Form';
 import type { Action, Field } from './Types';
 
 export function createDebouncedValidator<TFormValues, TValue>(

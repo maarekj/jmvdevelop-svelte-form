@@ -1,18 +1,18 @@
 <script lang="ts">
     import nuidg from 'locally-unique-id-generator';
-    import InputInt from '$lib/components/InputInt.svelte';
-    import InputText from '$lib/components/InputText.svelte';
-    import Row from '$lib/components/Row.svelte';
+    import type { Form } from '$lib';
+    import InputInt from '$lib/examples/InputInt.svelte';
+    import InputText from '$lib/examples/InputText.svelte';
+    import Row from '$lib/examples/Row.svelte';
     import { type User, createForm, genderChoices } from './User';
     import * as address from './Address';
     import AddressForm from './AddressForm.svelte';
-    import FormErrors from '$lib/components/FormErrors.svelte';
-    import SubmitButton from '$lib/components/SubmitButton.svelte';
-    import HtmlForm from '$lib/components/HtmlForm.svelte';
-    import type Form from '$lib/Form';
-    import Collection from '$lib/components/Collection.svelte';
-    import Choice, { optionalChoices } from '$lib/components/Choice.svelte';
-    import InputRequiredText from '$lib/components/InputRequiredText.svelte';
+    import FormErrors from '$lib/examples/FormErrors.svelte';
+    import SubmitButton from '$lib/examples/SubmitButton.svelte';
+    import HtmlForm from '$lib/examples/HtmlForm.svelte';
+    import Collection from '$lib/examples/Collection.svelte';
+    import Choice, { optionalChoices } from '$lib/examples/Choice.svelte';
+    import InputRequiredText from '$lib/examples/InputRequiredText.svelte';
 
     export let values: User;
 

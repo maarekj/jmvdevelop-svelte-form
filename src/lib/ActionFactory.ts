@@ -1,9 +1,9 @@
 import lodashKeys from 'lodash/keys';
 import type { Field, FormState, Action } from './Types';
-import type Form from './Form';
+import type { Form } from './Form';
 import { emptyField, mapField, mapFields } from './selectors';
 
-export default class ActionFactory<TValues, TError> {
+export class ActionFactory<TValues, TError> {
     constructor(private form: Form<TValues, TError>) {}
 
     focus<TValue>(field: Field<TValues, TValue>): Action<TValues, TError> {

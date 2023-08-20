@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type Form from '$lib/Form';
+    import type { Form } from '$lib';
     let className = 'btn btn-primary';
     export { className as class };
 

@@ -1,11 +1,11 @@
 import type { Field, MetaFields, FormState, ReadonlyListener, Action } from './Types';
-import StoreFactory from './StoreFactory';
-import ActionFactory from './ActionFactory';
+import { StoreFactory } from './StoreFactory';
+import { ActionFactory } from './ActionFactory';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsyncValidator<TValues> = (fields: Field<TValues, any>[]) => Promise<unknown>;
 
-export default class Form<TValues, TError> {
+export class Form<TValues, TError> {
     private _stores: StoreFactory<TValues, TError> | null = null;
     private _actions: ActionFactory<TValues, TError> | null = null;
     private initialState: FormState<TValues, TError>;

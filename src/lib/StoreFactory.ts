@@ -20,11 +20,11 @@ import {
     isAsyncValidating,
     formIsAsyncValidating,
 } from './selectors';
-import type Form from './Form';
+import type { Form } from './Form';
 import { readable, type Readable } from 'svelte/store';
 import type { Field, FormState } from './Types';
 
-export default class StoreFactory<Values, E> {
+export class StoreFactory<Values, E> {
     constructor(private form: Form<Values, E>) {}
 
     custom<T>(callback: (state: FormState<Values, E>) => T): Readable<T> {

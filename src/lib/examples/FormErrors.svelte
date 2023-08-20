@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type Form from '$lib/Form';
+    import type { Form } from '$lib';
     import { fade } from 'svelte/transition';
 
     type TValues = $$Generic;

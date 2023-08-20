@@ -1,9 +1,7 @@
 import trim from 'lodash/trim';
 import defaultTo from 'lodash/defaultTo';
-import type Form from '$lib/Form';
-import { createProperties } from '$lib/Field';
-import type { Field, FormState, TypeToFields } from '$lib/Types';
-import type { Choice } from '$lib/components/Choice.svelte';
+import { type Form, type Field, type FormState, type TypeToFields, createProperties } from '$lib';
+import type { Choice } from '$lib/examples/Choice.svelte';
 
 type Country = 'fr' | 'us' | 'gb' | 'ci' | 'tg' | 'il';
 
