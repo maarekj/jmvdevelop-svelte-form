@@ -184,7 +184,6 @@ export class ActionFactory<TValues, TError> {
     }
 
     listRemoveByPredicate<TValue>(
-        item: TValue,
         predicate: (value: TValue, index: number) => boolean,
         field: Field<TValues, TValue[]>,
     ): Action<TValues, TError> {
