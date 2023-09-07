@@ -1,16 +1,17 @@
 import lodashKeys from 'lodash/keys';
-import type { Field, FormState, Action } from './Types';
-import type { Form } from './Form';
-import { emptyField, mapField, mapFields } from './selectors';
+import type {Field, FormState, Action} from './Types';
+import type {Form} from './Form';
+import {emptyField, mapField, mapFields} from './selectors';
 
 export class ActionFactory<TValues, TError> {
-    constructor(private form: Form<TValues, TError>) {}
+    constructor(private form: Form<TValues, TError>) {
+    }
 
     focus<TValue>(field: Field<TValues, TValue>): Action<TValues, TError> {
         return (state) => {
             state = mapField(
                 state,
-                (field) => (field.focus == true ? field : { ...field, focus: true }),
+                (field) => (field.focus == true ? field : {...field, focus: true}),
                 field.getKey(),
             );
             return state;
@@ -24,30 +25,30 @@ export class ActionFactory<TValues, TError> {
                 (field) =>
                     field.focus == false && field.alreadyBlur === true
                         ? field
-                        : { ...field, focus: false, alreadyBlur: true },
+                        : {...field, focus: false, alreadyBlur: true},
                 field.getKey(),
             );
         };
     }
 
     startSubmit: Action<TValues, TError> = (state) => {
-        return { ...state, submitting: true, nbSubmits: state.nbSubmits + 1 };
+        return {...state, submitting: true, nbSubmits: state.nbSubmits + 1};
     };
 
     stopSubmit: Action<TValues, TError> = (state) => {
-        return state.submitting === false ? state : { ...state, submitting: false };
+        return state.submitting === false ? state : {...state, submitting: false};
     };
 
     submitSuccess: Action<TValues, TError> = (state) => {
-        return state.submitSuccess === true ? state : { ...state, submitSuccess: true };
+        return state.submitSuccess === true ? state : {...state, submitSuccess: true};
     };
 
     clearRootErrors: Action<TValues, TError> = (state) => {
-        return state.rootErrors.length === 0 ? state : { ...state, rootErrors: [] };
+        return state.rootErrors.length === 0 ? state : {...state, rootErrors: []};
     };
 
     clearSubmitErrors: Action<TValues, TError> = (state) => {
-        return state.submitErrors.length === 0 ? state : { ...state, submitErrors: [] };
+        return state.submitErrors.length === 0 ? state : {...state, submitErrors: []};
     };
 
     clearFieldAsyncError<TValue>(field: Field<TValues, TValue>): Action<TValues, TError> {
@@ -55,7 +56,7 @@ export class ActionFactory<TValues, TError> {
             return mapField(
                 state,
                 (field) => {
-                    return field.asyncErrors.length == 0 ? field : { ...field, asyncErrors: [] };
+                    return field.asyncErrors.length == 0 ? field : {...field, asyncErrors: []};
                 },
                 field.getKey(),
             );
@@ -71,7 +72,7 @@ export class ActionFactory<TValues, TError> {
                 if (field.errors.length === 0) {
                     return fields;
                 } else {
-                    return { ...fields, [key]: { ...field, errors: [] } };
+                    return {...fields, [key]: {...field, errors: []}};
                 }
             }, fields);
         });
@@ -79,7 +80,7 @@ export class ActionFactory<TValues, TError> {
 
     addError<Value>(field: Field<TValues, Value>, error: TError): Action<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
-            return mapField(state, (field) => ({ ...field, errors: [...field.errors, error] }), field.getKey());
+            return mapField(state, (field) => ({...field, errors: [...field.errors, error]}), field.getKey());
         };
     }
 
@@ -87,7 +88,7 @@ export class ActionFactory<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
             return mapField(
                 state,
-                (field) => ({ ...field, asyncErrors: [...field.asyncErrors, error] }),
+                (field) => ({...field, asyncErrors: [...field.asyncErrors, error]}),
                 field.getKey(),
             );
         };
@@ -97,7 +98,7 @@ export class ActionFactory<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
             return mapField(
                 state,
-                (field) => (field.errors.length === 0 ? field : { ...field, errors: [] }),
+                (field) => (field.errors.length === 0 ? field : {...field, errors: []}),
                 field.getKey(),
             );
         };
@@ -105,13 +106,13 @@ export class ActionFactory<TValues, TError> {
 
     addRootError(error: TError): Action<TValues, TError> {
         return (state) => {
-            return { ...state, rootErrors: [...state.rootErrors, error] };
+            return {...state, rootErrors: [...state.rootErrors, error]};
         };
     }
 
     addSubmitError(error: TError): Action<TValues, TError> {
         return (state) => {
-            return { ...state, submitErrors: [...state.submitErrors, error] };
+            return {...state, submitErrors: [...state.submitErrors, error]};
         };
     }
 
@@ -123,11 +124,11 @@ export class ActionFactory<TValues, TError> {
 
             let prevState = state;
 
-            state = { ...state, values: values };
+            state = {...state, values: values};
             state = fields.reduce((state, field) => {
                 return mapField(
                     state,
-                    (field) => (field.dirty === true ? field : { ...field, dirty: true }),
+                    (field) => (field.dirty === true ? field : {...field, dirty: true}),
                     field.getKey(),
                 );
             }, state);
@@ -163,28 +164,40 @@ export class ActionFactory<TValues, TError> {
         };
     }
 
-    listPushItem<TValue>(value: TValue, field: Field<TValues, TValue[]>): Action<TValues, TError> {
+    updateValue<TValue>(updater: (value: TValue) => TValue, field: Field<TValues, TValue>): Action<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
-            let list = field.getValue(state.values);
-            list = [...list, value];
-            return this.changeValue(list, field)(state);
+            const newValue = updater(field.getValue(state.values));
+            return this.changeValue(newValue, field)(state);
         };
     }
 
-    listRemoveItem<TValue>(index: number, field: Field<TValues, TValue[]>): Action<TValues, TError> {
-        return (state: FormState<TValues, TError>) => {
-            let list = field.getValue(state.values);
-            list = list.filter((_v, i) => i != index);
+    listPushItem<TValue>(value: TValue, field: Field<TValues, TValue[]>): Action<TValues, TError> {
+        return this.updateValue((list) => {
+            return [...list, value];
+        }, field);
+    }
 
-            return this.changeValue(list, field)(state);
-        };
+    listRemoveIndex<TValue>(index: number, field: Field<TValues, TValue[]>): Action<TValues, TError> {
+        return this.updateValue((list) => {
+            return list.filter((_v, i) => i != index);
+        }, field);
+    }
+
+    listRemoveByPredicate<TValue>(
+        item: TValue,
+        predicate: (value: TValue, index: number) => boolean,
+        field: Field<TValues, TValue[]>,
+    ): Action<TValues, TError> {
+        return this.updateValue((list) => {
+            return list.filter((v, index) => !predicate(v, index));
+        }, field);
     }
 
     asyncValidateFieldStart<TValue>(field: Field<TValues, TValue>): Action<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
             return mapField(
                 state,
-                (field) => ({ ...field, asyncValidating: field.asyncValidating + 1 }),
+                (field) => ({...field, asyncValidating: field.asyncValidating + 1}),
                 field.getKey(),
             );
         };
@@ -194,7 +207,7 @@ export class ActionFactory<TValues, TError> {
         return (state: FormState<TValues, TError>) => {
             return mapField(
                 state,
-                (field) => ({ ...field, asyncValidating: field.asyncValidating - 1 }),
+                (field) => ({...field, asyncValidating: field.asyncValidating - 1}),
                 field.getKey(),
             );
         };

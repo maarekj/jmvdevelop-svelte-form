@@ -26,7 +26,7 @@
 
     function onRemoveClick(index: number) {
         return (_event: MouseEvent) => {
-            form.dispatch(form.actions().listRemoveItem(index, field));
+            form.dispatch(form.actions().listRemoveIndex(index, field));
         };
     }
 </script>
