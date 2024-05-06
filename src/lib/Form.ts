@@ -16,7 +16,8 @@ export class Form<TValues, TError> {
     private asyncValidators: AsyncValidator<TValues>[];
 
     private onChangeValue: ((
-        keys: Field<TValues, unknown>[],
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        keys: Field<TValues, any>[],
         prevState: FormState<TValues, TError>,
         currState: FormState<TValues, TError>,
     ) => FormState<TValues, TError>)[];
@@ -91,7 +92,8 @@ export class Form<TValues, TError> {
     }
 
     getOnChangeValues(): ((
-        fields: Field<TValues, unknown>[],
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        fields: Field<TValues, any>[],
         prevState: FormState<TValues, TError>,
         currState: FormState<TValues, TError>,
     ) => FormState<TValues, TError>)[] {
@@ -100,7 +102,8 @@ export class Form<TValues, TError> {
 
     addOnChangeValues(
         callback: (
-            fields: Field<TValues, unknown>[],
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            fields: Field<TValues, any>[],
             prevState: FormState<TValues, TError>,
             currState: FormState<TValues, TError>,
         ) => FormState<TValues, TError>,
