@@ -108,7 +108,7 @@ export function formHasFieldErrors<V, E>(state: FormState<V, E>): boolean {
     return reduce(
         state.fields,
         (acc, field) => {
-            return acc || field.errors.length > 0;
+            return acc || field.errors.length > 0 || field.asyncErrors.length > 0;
         },
         false,
     );
