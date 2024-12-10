@@ -1,4 +1,4 @@
-import type { Field, ApplyFields } from './Types';
+import type { Field, ApplyFields } from './Types.js';
 
 export class RootField<TFormValues> implements Field<TFormValues, TFormValues> {
     getKey(): string {
@@ -19,7 +19,10 @@ export function createRoot<TFormValues>(): Field<TFormValues, TFormValues> {
 }
 
 export class DefaultField<TFormValues, TValue> implements Field<TFormValues, NonNullable<TValue>> {
-    constructor(private defaultValue: NonNullable<TValue>, private field: Field<TFormValues, TValue>) {}
+    constructor(
+        private defaultValue: NonNullable<TValue>,
+        private field: Field<TFormValues, TValue>,
+    ) {}
 
     getKey(): string {
         return this.field.getKey();
@@ -44,7 +47,10 @@ export function createDefault<TFormValues, TValue>(
 export class PropertyField<TFormValues, TObject extends object, TProperty extends keyof TObject & string>
     implements Field<TFormValues, TObject[TProperty]>
 {
-    constructor(private self: Field<TFormValues, TObject>, private property: TProperty) {}
+    constructor(
+        private self: Field<TFormValues, TObject>,
+        private property: TProperty,
+    ) {}
 
     getKey(): string {
         return `${this.self.getKey()}.${this.property}`;

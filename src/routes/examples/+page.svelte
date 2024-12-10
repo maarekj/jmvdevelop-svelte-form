@@ -1,12 +1,17 @@
 <script lang="ts">
-    import type { Form } from '$lib';
-    import type { PageData } from './$types';
-    import type { User } from './form/User';
+    import type { Form } from '$lib/index.js';
+    import type { PageData } from './$types.js';
+    import type { User } from './form/User.js';
     import UserForm from './form/UserForm.svelte';
+    import * as z from 'zod';
 
-    export let data: PageData;
+    interface Props {
+        data: PageData;
+    }
 
-    let successMessage: string | null = null;
+    let { data }: Props = $props();
+
+    let successMessage: string | null = $state(null);
 
     async function onSubmit(form: Form<User, string>) {
         const response = await fetch('/examples/form', {
@@ -14,7 +19,14 @@
             body: JSON.stringify(form.getState().values),
             headers: { 'content-type': 'application/json' },
         });
-        const json = await response.json();
+
+        const json = z
+            .object({
+                status: z.string(),
+                message: z.string(),
+            })
+            .parse(await response.json());
+
         if (json?.status === 'success') {
             successMessage = json.message;
         }

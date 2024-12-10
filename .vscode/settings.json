@@ -1,8 +1,0 @@
-{
-    "files.exclude": {
-        "package": true
-    },
-    "search.exclude": {
-        "package": true
-    }
-}

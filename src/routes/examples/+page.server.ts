@@ -1,5 +1,5 @@
-import type { PageServerLoad } from './$types';
-import { empty, type User } from './form/User';
+import type { PageServerLoad } from './$types.js';
+import { empty, type User } from './form/User.js';
 
 export const load = (() => {
     return {

@@ -1,5 +1,5 @@
-import filter from 'lodash/filter';
-import join from 'lodash/join';
+import filter from 'lodash/filter.js';
+import join from 'lodash/join.js';
 
 export function cx(...classNames: Array<string | null | undefined>): string {
     return join(

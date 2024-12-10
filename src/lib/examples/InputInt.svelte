@@ -1,27 +1,25 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
-    import parseInt from 'lodash/parseInt';
+<script lang="ts" generics="TValues">
+    import type { Form, Field } from '$lib/index.js';
+    import parseInt from 'lodash/parseInt.js';
     import Input from './Input.svelte';
 
-    export let type = 'number';
-
-    type TValues = $$Generic;
-    type TValue = number | null;
-
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
-
-    function toText(value: TValue) {
+    function toText(value: number | null) {
         return value?.toString();
     }
 
-    function fromText(str: string): TValue {
+    function fromText(str: string): number | null {
         const value = parseInt(str);
         return isNaN(value) ? null : value;
     }
 
-    let className: string | null = null;
-    export { className as class };
+    interface Props {
+        type?: string;
+        form: Form<TValues, string>;
+        field: Field<TValues, number | null>;
+        class?: string | null;
+    }
+
+    let { type = 'number', form, field, class: className = null }: Props = $props();
 </script>
 
 <Input {form} {field} {fromText} {toText} {type} class={className} />

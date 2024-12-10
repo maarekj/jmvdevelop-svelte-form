@@ -1,21 +1,20 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
-    import { cx } from './cx';
-    import defaultTo from 'lodash/defaultTo';
+<script lang="ts" generics="TValues, TValue">
+    import { preventDefault } from 'svelte/legacy';
 
-    export let type = 'text';
+    import type { Form, Field } from '$lib/index.js';
+    import { cx } from './cx.js';
+    import defaultTo from 'lodash/defaultTo.js';
 
-    type TValues = $$Generic;
-    type TValue = $$Generic;
+    interface Props {
+        type?: string;
+        form: Form<TValues, string>;
+        field: Field<TValues, TValue>;
+        toText: (value: TValue) => string | null | undefined;
+        fromText: (string: string) => TValue;
+        class?: string | null;
+    }
 
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
-
-    export let toText: (value: TValue) => string | null | undefined;
-    export let fromText: (string: string) => TValue;
-
-    let className: string | null = null;
-    export { className as class };
+    let { type = 'text', form, field, toText, fromText, class: className = null }: Props = $props();
 
     function onInput(event: Event) {
         const target = event.target as HTMLInputElement;
@@ -31,12 +30,12 @@
         form.dispatch(form.actions().focus(field));
     }
 
-    $: v = form.stores().fieldValue(field);
-    $: nbSubmits = form.stores().nbSubmits();
-    $: isAlreadyBlur = form.stores().isAlreadyBlur(field);
-    $: hasAnyErrors = form.stores().hasFieldAnyErrors(field);
-    $: id = form.getFieldId(field);
-    $: valueText = defaultTo(toText($v), '');
+    let v = $derived(form.stores().fieldValue(field));
+    let nbSubmits = $derived(form.stores().nbSubmits());
+    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
+    let hasAnyErrors = $derived(form.stores().hasFieldAnyErrors(field));
+    let id = $derived(form.getFieldId(field));
+    let valueText = $derived(defaultTo(toText($v), ''));
 </script>
 
 <input
@@ -45,7 +44,7 @@
     class={cx('form-control', className)}
     class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasAnyErrors}
     value={valueText}
-    on:focus|preventDefault={onFocus}
-    on:blur|preventDefault={onBlur}
-    on:input={onInput}
+    onfocus={preventDefault(onFocus)}
+    onblur={preventDefault(onBlur)}
+    oninput={onInput}
 />

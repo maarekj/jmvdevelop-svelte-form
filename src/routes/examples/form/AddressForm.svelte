@@ -1,17 +1,20 @@
-<script lang="ts">
-    import type { Form } from '$lib';
-    import { type Fields, countryChoices } from './Address';
+<script lang="ts" generics="TValues">
+    import type { Form } from '$lib/index.js';
+    import { type Fields, countryChoices } from './Address.js';
     import FieldErrors from '$lib/examples/FieldErrors.svelte';
     import InputRequiredText from '$lib/examples/InputRequiredText.svelte';
     import InputText from '$lib/examples/InputText.svelte';
     import Row from '$lib/examples/Row.svelte';
-    import Choice, { optionalChoices } from '$lib/examples/Choice.svelte';
+    import Choice from '$lib/examples/Choice.svelte';
+    import { optionalChoices } from '$lib/examples/utils.js';
 
-    type TValues = $$Generic;
+    interface Props {
+        form: Form<TValues, string>;
+        fields: Fields<TValues>;
+        label: string;
+    }
 
-    export let form: Form<TValues, string>;
-    export let fields: Fields<TValues>;
-    export let label: string;
+    let { form, fields, label }: Props = $props();
 </script>
 
 <div class="modal position-static d-block">
@@ -22,17 +25,25 @@
             </div>
             <div class="modal-body">
                 <div class="form">
-                    <Row {form} field={fields.street} label="Street" let:field>
-                        <InputRequiredText {form} {field} />
+                    <Row {form} field={fields.street} label="Street">
+                        {#snippet children({ field })}
+                            <InputRequiredText {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.city} label="City" let:field>
-                        <InputRequiredText {form} {field} />
+                    <Row {form} field={fields.city} label="City">
+                        {#snippet children({ field })}
+                            <InputRequiredText {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.country} label="Country" let:field>
-                        <Choice {form} {field} choices={optionalChoices(countryChoices)} />
+                    <Row {form} field={fields.country} label="Country">
+                        {#snippet children({ field })}
+                            <Choice {form} {field} choices={optionalChoices(countryChoices)} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.zipcode} label="Zipcode" let:field>
-                        <InputText {form} {field} />
+                    <Row {form} field={fields.zipcode} label="Zipcode">
+                        {#snippet children({ field })}
+                            <InputText {form} {field} />
+                        {/snippet}
                     </Row>
 
                     <FieldErrors {form} field={fields.self} />

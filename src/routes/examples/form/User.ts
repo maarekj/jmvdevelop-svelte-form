@@ -1,9 +1,9 @@
-import trim from 'lodash/trim';
-import defaultTo from 'lodash/defaultTo';
-import { Form, createRoot, createListItem, createProperties, createDebouncedValidator } from '$lib';
-import type { Field, FormState, TypeToFields } from '$lib';
-import * as address from './Address';
-import type { Choice } from '$lib/examples/Choice.svelte';
+import trim from 'lodash/trim.js';
+import defaultTo from 'lodash/defaultTo.js';
+import { Form, createRoot, createListItem, createProperties, createDebouncedValidator } from '$lib/index.js';
+import type { Field, FormState, TypeToFields } from '$lib/index.js';
+import * as address from './Address.js';
+import type { Choice } from '$lib/examples/utils.js';
 
 type Gender = 'm' | 'f';
 export const genderChoices: Choice<Gender>[] = [
@@ -81,7 +81,7 @@ export function createForm(id: string, initialValues: Partial<User> = empty): [F
     const fields = createFields<User>(createRoot<User>());
     const form = new Form<User, string>({ initialValues: { ...empty, ...initialValues } }, id);
 
-    const { addError, addAsyncError, clearFieldAsyncError } = form.actions();
+    const { addFieldError, addFieldAsyncError, clearFieldAsyncError } = form.actions();
 
     form.addAsyncValidator(
         createDebouncedValidator(form, fields.username, 500, async () => {
@@ -90,7 +90,7 @@ export function createForm(id: string, initialValues: Partial<User> = empty): [F
                 state = clearFieldAsyncError(fields.username)(state);
                 const username = fields.username.getValue(state.values);
                 if (username === 'maarekj') {
-                    state = addAsyncError(fields.username, 'Username already existed.')(state);
+                    state = addFieldAsyncError(fields.username, 'Username already existed.')(state);
                 }
 
                 return state;
@@ -100,22 +100,22 @@ export function createForm(id: string, initialValues: Partial<User> = empty): [F
 
     form.addValidator((state) => {
         if (trim(defaultTo(state.values.lastname, '')) == '') {
-            state = addError(fields.lastname, 'Ne doit pas être vide.')(state);
+            state = addFieldError(fields.lastname, 'Ne doit pas être vide.')(state);
         }
 
         if (trim(defaultTo(state.values.firstname, '')) == '') {
-            state = addError(fields.firstname, 'Ne doit pas être vide.')(state);
+            state = addFieldError(fields.firstname, 'Ne doit pas être vide.')(state);
         }
 
         if (trim(defaultTo(state.values.username, '')) == '') {
-            state = addError(fields.username, 'Ne doit pas être vide.')(state);
+            state = addFieldError(fields.username, 'Ne doit pas être vide.')(state);
         }
 
         const age = defaultTo(state.values.age, null);
         if (age == null) {
-            state = addError(fields.age, 'Ne doit pas être vide.')(state);
+            state = addFieldError(fields.age, 'Ne doit pas être vide.')(state);
         } else if (age < 18) {
-            state = addError(fields.age, 'Vous devez être majeur.')(state);
+            state = addFieldError(fields.age, 'Vous devez être majeur.')(state);
         }
 
         state = state.values.addresses.reduce((state, _value, index) => {
@@ -123,7 +123,7 @@ export function createForm(id: string, initialValues: Partial<User> = empty): [F
         }, state);
 
         if (state.values.addresses.length == 0) {
-            state = addError(fields.addresses.self, 'Vous devez avoir au moins une adresse.')(state);
+            state = addFieldError(fields.addresses.self, 'Vous devez avoir au moins une adresse.')(state);
         }
 
         return state;

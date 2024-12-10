@@ -1,31 +1,45 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
-    import range from 'lodash/range';
+<script lang="ts" generics="TValues, TValue">
+    import { preventDefault } from 'svelte/legacy';
+    import type { Snippet } from 'svelte';
+
+    import type { Form, Field } from '$lib/index.js';
+    import range from 'lodash/range.js';
     import FieldErrors from './FieldErrors.svelte';
 
-    type TValues = $$Generic;
-    type TValue = $$Generic;
+    interface Props {
+        label: string;
+        form: Form<TValues, string>;
+        field: Field<TValues, TValue[]>;
+        empty: TValue;
+        itemClass?: string;
+        removeBtnClass?: string;
+        placeholder?: Snippet;
+        item?: Snippet<[{ index: number; onRemoveClick: (event: MouseEvent) => void }]>;
+    }
 
-    export let label: string;
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue[]>;
-    export let empty: TValue;
+    let {
+        label,
+        form,
+        field,
+        empty,
+        itemClass = 'flex-fill',
+        removeBtnClass = 'btn btn-light align-self-end',
+        placeholder,
+        item,
+    }: Props = $props();
 
-    export let itemClass = 'flex-fill';
-    export let removeBtnClass = 'btn btn-light align-self-end';
-
-    $: nbSubmits = form.stores().nbSubmits();
-    $: isAlreadyBlur = form.stores().isAlreadyBlur(field);
-    $: hasFieldErrors = form.stores().hasFieldErrors(field);
-    $: list = form.stores().fieldValue(field);
-    $: count = $list.length;
+    let nbSubmits = $derived(form.stores().nbSubmits());
+    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
+    let hasFieldErrors = $derived(form.stores().hasFieldErrors(field));
+    let list = $derived(form.stores().fieldValue(field));
+    let count = $derived($list.length);
 
     function onAddClick() {
         form.dispatch(form.actions().listPushItem(empty, field));
     }
 
     function onRemoveClick(index: number) {
-        return (_event: MouseEvent) => {
+        return (_event: Event) => {
             form.dispatch(form.actions().listRemoveIndex(index, field));
         };
     }
@@ -39,16 +53,16 @@
             </div>
             <div class="modal-body">
                 {#if count == 0}
-                    <slot name="placeholder" />
+                    {@render placeholder?.()}
                 {:else}
                     <div class="form" class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasFieldErrors}>
                         {#each range(0, count) as index (index)}
                             {@const removeClick = onRemoveClick(index)}
                             <div class="d-flex gap-2">
                                 <div class={itemClass}>
-                                    <slot name="item" {index} onRemoveClick={removeClick} />
+                                    {@render item?.({ index, onRemoveClick: removeClick })}
                                 </div>
-                                <button class={removeBtnClass} on:click|preventDefault={removeClick}>- Delete</button>
+                                <button class={removeBtnClass} onclick={preventDefault(removeClick)}>- Delete</button>
                             </div>
                         {/each}
                     </div>
@@ -56,7 +70,7 @@
                 <FieldErrors {form} {field} />
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" on:click|preventDefault={onAddClick}>+ Add</button>
+                <button class="btn btn-primary" onclick={preventDefault(onAddClick)}>+ Add</button>
             </div>
         </div>
     </div>

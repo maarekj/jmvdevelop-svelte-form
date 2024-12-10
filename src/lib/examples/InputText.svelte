@@ -1,26 +1,24 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
-    import defaultTo from 'lodash/defaultTo';
+<script lang="ts" generics="TValues">
+    import type { Form, Field } from '$lib/index.js';
+    import defaultTo from 'lodash/defaultTo.js';
     import Input from './Input.svelte';
 
-    export let type = 'text';
-
-    type TValues = $$Generic;
-    type TValue = string | null;
-
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
-
-    function toText(value: TValue): string {
+    function toText(value: string | null): string {
         return defaultTo(value, '');
     }
 
-    function fromText(str: string): TValue {
+    function fromText(str: string): string | null {
         return str;
     }
 
-    let className: string | null = null;
-    export { className as class };
+    interface Props {
+        type?: string;
+        form: Form<TValues, string>;
+        field: Field<TValues, string | null>;
+        class?: string | null;
+    }
+
+    let { type = 'text', form, field, class: className = null }: Props = $props();
 </script>
 
 <Input {form} {field} {fromText} {toText} {type} class={className} />

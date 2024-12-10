@@ -1,34 +1,17 @@
-<script lang="ts" context="module">
-    export type Choice<TValue> = {
-        value: TValue;
-        key: string;
-        label: string;
-    };
+<script lang="ts" generics="TValues, TValue">
+    import type { Form, Field } from '$lib/index.js';
+    import { cx } from './cx.js';
+    import type { Choice } from '$lib/examples/utils.js';
 
-    export function optionalChoices<TValue>(
-        choices: Choice<TValue>[],
-        placeholder = '',
-        placeholderKey = '__placeholder__',
-    ): Choice<TValue | null>[] {
-        return [{ value: null, key: placeholderKey, label: placeholder }, ...choices];
+    interface Props {
+        expanded?: boolean;
+        form: Form<TValues, string>;
+        field: Field<TValues, TValue>;
+        choices: readonly Choice<TValue>[];
+        class?: string | null;
     }
-</script>
 
-<script lang="ts">
-    import type { Form, Field } from '$lib';
-    import { cx } from './cx';
-
-    type TValues = $$Generic;
-    type TValue = $$Generic;
-
-    export let expanded = false;
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
-
-    export let choices: Choice<TValue>[];
-
-    let className: string | null = null;
-    export { className as class };
+    let { expanded = false, form, field, choices, class: className = null }: Props = $props();
 
     function onSelectInput(event: Event) {
         const target = event.target as HTMLSelectElement;
@@ -45,8 +28,6 @@
         const key = target.value;
         const choice = choices.find((choice) => choice.key == key);
 
-        console.log(key, choice);
-
         if (choice != null) {
             form.dispatch(form.actions().changeValue(choice.value, field));
         }
@@ -60,12 +41,12 @@
         form.dispatch(form.actions().focus(field));
     }
 
-    $: v = form.stores().fieldValue(field);
-    $: nbSubmits = form.stores().nbSubmits();
-    $: isAlreadyBlur = form.stores().isAlreadyBlur(field);
-    $: hasFieldErrors = form.stores().hasFieldErrors(field);
-    $: id = form.getFieldId(field);
-    $: choice = choices.find((choice) => choice.value == $v);
+    let v = $derived(form.stores().fieldValue(field));
+    let nbSubmits = $derived(form.stores().nbSubmits());
+    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
+    let hasFieldErrors = $derived(form.stores().hasFieldErrors(field));
+    let id = $derived(form.getFieldId(field));
+    let choice = $derived(choices.find((choice) => choice.value == $v));
 </script>
 
 {#if expanded == false}
@@ -74,9 +55,9 @@
         class={cx('form-select', className)}
         class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasFieldErrors}
         value={choice?.key}
-        on:focus={onFocus}
-        on:blur={onBlur}
-        on:input={onSelectInput}
+        onfocus={onFocus}
+        onblur={onBlur}
+        oninput={onSelectInput}
     >
         {#each choices as choice (choice.key)}
             <option value={choice.key}>{choice.label}</option>
@@ -93,9 +74,9 @@
                     name={id}
                     value={c.key}
                     checked={c.key == choice?.key}
-                    on:input={onCheckboxInput}
-                    on:focus={onFocus}
-                    on:blur={onBlur}
+                    oninput={onCheckboxInput}
+                    onfocus={onFocus}
+                    onblur={onBlur}
                 />
                 <label class="form-check-label" for="{id}.key-{c.key}">
                     {c.label}

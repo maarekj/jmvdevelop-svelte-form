@@ -1,27 +1,35 @@
 <script lang="ts">
-    import nuidg from 'locally-unique-id-generator';
-    import type { Form } from '$lib';
+    import { run } from 'svelte/legacy';
+    import uniqueId from 'lodash/uniqueId.js';
+    import type { Form } from '$lib/index.js';
     import InputInt from '$lib/examples/InputInt.svelte';
     import InputText from '$lib/examples/InputText.svelte';
     import Row from '$lib/examples/Row.svelte';
-    import { type User, createForm, genderChoices } from './User';
-    import * as address from './Address';
+    import { type User, createForm, genderChoices } from './User.js';
+    import * as address from './Address.js';
     import AddressForm from './AddressForm.svelte';
     import FormErrors from '$lib/examples/FormErrors.svelte';
     import SubmitButton from '$lib/examples/SubmitButton.svelte';
     import HtmlForm from '$lib/examples/HtmlForm.svelte';
     import Collection from '$lib/examples/Collection.svelte';
-    import Choice, { optionalChoices } from '$lib/examples/Choice.svelte';
+    import Choice from '$lib/examples/Choice.svelte';
+    import { optionalChoices } from '$lib/examples/utils.js';
     import InputRequiredText from '$lib/examples/InputRequiredText.svelte';
 
-    export let values: User;
+    let { values = $bindable(), onSubmit = async () => {} }: Props = $props();
 
-    const [form, fields] = createForm(nuidg(), values);
+    const [form, fields] = createForm(uniqueId(), values);
 
-    export let onSubmit: (form: Form<User, string>) => Promise<unknown> = async () => {};
+    interface Props {
+        values: User;
+        onSubmit?: (form: Form<User, string>) => Promise<unknown>;
+    }
 
     const formValues = form.stores().formValues();
-    $: values = $formValues;
+
+    run(() => {
+        values = $formValues;
+    });
 </script>
 
 <div class="modal position-static d-block">
@@ -32,28 +40,42 @@
             </div>
             <div class="modal-body">
                 <div class="form">
-                    <Row {form} field={fields.lastname} label="Lastname" let:field>
-                        <InputText {form} {field} />
+                    <Row {form} field={fields.lastname} label="Lastname">
+                        {#snippet children({ field })}
+                            <InputText {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.firstname} label="Firstname" let:field>
-                        <InputText {form} {field} />
+                    <Row {form} field={fields.firstname} label="Firstname">
+                        {#snippet children({ field })}
+                            <InputText {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.username} label="Username" let:field>
-                        <InputText {form} {field} />
+                    <Row {form} field={fields.username} label="Username">
+                        {#snippet children({ field })}
+                            <InputText {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.age} label="Age" let:field>
-                        <InputInt {form} {field} />
+                    <Row {form} field={fields.age} label="Age">
+                        {#snippet children({ field })}
+                            <InputInt {form} {field} />
+                        {/snippet}
                     </Row>
-                    <Row {form} field={fields.gender} label="Gender" let:field>
-                        <Choice {form} {field} choices={optionalChoices(genderChoices, 'Not defined')} expanded />
+                    <Row {form} field={fields.gender} label="Gender">
+                        {#snippet children({ field })}
+                            <Choice {form} {field} choices={optionalChoices(genderChoices, 'Not defined')} expanded />
+                        {/snippet}
                     </Row>
                     <Collection {form} field={fields.tags.self} empty={''} label="Tags">
-                        <div slot="placeholder">Not yet tags.</div>
-                        <svelte:fragment slot="item" let:index>
-                            <Row {form} field={fields.tags.item(index)} label="Tag {index}" let:field>
-                                <InputRequiredText {form} {field} />
+                        {#snippet placeholder()}
+                            <div>Not yet tags.</div>
+                        {/snippet}
+                        {#snippet item({ index }: { index: number })}
+                            <Row {form} field={fields.tags.item(index)} label="Tag {index}">
+                                {#snippet children({ field })}
+                                    <InputRequiredText {form} {field} />
+                                {/snippet}
                             </Row>
-                        </svelte:fragment>
+                        {/snippet}
                     </Collection>
 
                     <Collection
@@ -63,10 +85,12 @@
                         label="Addresses"
                         removeBtnClass="btn btn-light align-self-center"
                     >
-                        <div slot="placeholder">Not yet address.</div>
-                        <svelte:fragment slot="item" let:index>
+                        {#snippet placeholder()}
+                            <div>Not yet address.</div>
+                        {/snippet}
+                        {#snippet item({ index }: { index: number })}
                             <AddressForm {form} fields={fields.addresses.item(index)} label="Address {index}" />
-                        </svelte:fragment>
+                        {/snippet}
                     </Collection>
 
                     <FormErrors {form} />

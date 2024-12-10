@@ -1,5 +1,5 @@
-import reduce from 'lodash/reduce';
-import type { FormState, MetaField, MetaFields } from './Types';
+import reduce from 'lodash/reduce.js';
+import type { FormState, MetaField, MetaFields } from './Types.js';
 
 export const emptyField = {
     focus: false,
@@ -34,23 +34,23 @@ export function getField<V, E>(state: FormState<V, E>, key: string): MetaField<E
     return state.fields[key] ?? emptyField;
 }
 
-export function hasFocus<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldHasFocus<V, E>(state: FormState<V, E>, key: string): boolean {
     return getField(state, key).focus;
 }
 
-export function isBlur<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldIsBlur<V, E>(state: FormState<V, E>, key: string): boolean {
     return !getField(state, key).focus;
 }
 
-export function isAlreadyBlur<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldIsAlreadyBlur<V, E>(state: FormState<V, E>, key: string): boolean {
     return getField(state, key).alreadyBlur;
 }
 
-export function isDirty<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldIsDirty<V, E>(state: FormState<V, E>, key: string): boolean {
     return getField(state, key).dirty;
 }
 
-export function isAsyncValidating<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldIsAsyncValidating<V, E>(state: FormState<V, E>, key: string): boolean {
     return Math.ceil(getField(state, key).asyncValidating) > 0;
 }
 
@@ -64,24 +64,24 @@ export function formIsAsyncValidating<V, E>(state: FormState<V, E>): boolean {
     );
 }
 
-export function hasAsyncErrors<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldHasAsyncErrors<V, E>(state: FormState<V, E>, key: string): boolean {
     return getField(state, key).asyncErrors.length > 0;
 }
 
-export function getAsyncErrors<V, E>(state: FormState<V, E>, key: string): E[] {
+export function getFieldAsyncErrors<V, E>(state: FormState<V, E>, key: string): E[] {
     return getField(state, key).asyncErrors;
 }
 
-export function hasErrors<V, E>(state: FormState<V, E>, key: string): boolean {
+export function fieldHasErrors<V, E>(state: FormState<V, E>, key: string): boolean {
     return getField(state, key).errors.length > 0;
 }
 
-export function getErrors<V, E>(state: FormState<V, E>, key: string): E[] {
+export function getFieldErrors<V, E>(state: FormState<V, E>, key: string): E[] {
     return getField(state, key).errors;
 }
 
-export function hasAnyErrors<V, E>(state: FormState<V, E>, key: string): boolean {
-    return hasAsyncErrors(state, key) || hasErrors(state, key);
+export function fieldHasAnyErrors<V, E>(state: FormState<V, E>, key: string): boolean {
+    return fieldHasAsyncErrors(state, key) || fieldHasErrors(state, key);
 }
 
 export function formIsDirty<V, E>(state: FormState<V, E>): boolean {

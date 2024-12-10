@@ -1,17 +1,19 @@
-<script lang="ts">
-    import { type Form, formHasErrors } from '$lib';
+<script lang="ts" generics="TValues">
+    import { type Form, formHasErrors } from '$lib/index.js';
 
-    let className = 'btn btn-primary';
-    export { className as class };
+    interface Props {
+        class?: string;
+        form: Form<TValues, string>;
+        onSubmit?: (form: Form<TValues, string>) => Promise<unknown>;
+        children?: import('svelte').Snippet;
+    }
 
-    type TValues = $$Generic;
+    let { class: className = 'btn btn-primary', form, onSubmit = async () => {}, children }: Props = $props();
 
-    export let form: Form<TValues, string>;
     const actions = form.actions();
 
-    export let onSubmit: (form: Form<TValues, string>) => Promise<unknown> = async () => {};
-
-    async function innerOnSubmit(_event: SubmitEvent) {
+    async function innerOnSubmit(event: Event) {
+        event.preventDefault();
         form.dispatch(actions.startSubmit);
         form.dispatch(actions.clearSubmitErrors);
         if (formHasErrors(form.getState())) {
@@ -31,6 +33,6 @@
     }
 </script>
 
-<form class={className} on:submit|preventDefault={innerOnSubmit}>
-    <slot />
+<form class={className} onsubmit={innerOnSubmit}>
+    {@render children?.()}
 </form>

@@ -1,27 +1,28 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
+<script lang="ts" generics="TValues, TValue extends unknown">
+    import type { Form, Field } from '$lib/index.js';
     import { fade } from 'svelte/transition';
     import FieldErrors from './FieldErrors.svelte';
+    import type { Snippet } from 'svelte';
 
-    type TValues = $$Generic;
-    type TValue = $$Generic<unknown>;
+    interface Props {
+        form: Form<TValues, string>;
+        field: Field<TValues, TValue>;
+        label: string;
+        id?: string;
+        class?: string | null;
+        children?: Snippet<[{ field: Field<TValues, TValue> }]>;
+    }
 
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
-    export let label: string;
-    export let id: string = form.getFieldId(field);
+    let { form, field, label, id = form.getFieldId(field), class: className = null, children }: Props = $props();
 
-    let className: string | null = null;
-    export { className as class };
-
-    $: isAsyncValidating = form.stores().isAsyncValidating(field);
+    let isAsyncValidating = $derived(form.stores().isAsyncValidating(field));
 </script>
 
 <div class={className}>
     <label class={'form-label'} for={id}> {label} </label>
-    <slot {field} />
+    {@render children?.({ field })}
     {#if $isAsyncValidating}
-        <div in:fade class="invalid-feedback d-block text-warning-emphasis">validating...</div>
+        <div in:fade|global class="invalid-feedback d-block text-warning-emphasis">validating...</div>
     {/if}
     <FieldErrors {form} {field} />
 </div>

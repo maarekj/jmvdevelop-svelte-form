@@ -1,14 +1,6 @@
-<script lang="ts">
-    import type { Form, Field } from '$lib';
+<script lang="ts" generics="TValues">
+    import type { Form, Field } from '$lib/index.js';
     import Input from './Input.svelte';
-
-    export let type = 'text';
-
-    type TValues = $$Generic;
-    type TValue = string;
-
-    export let form: Form<TValues, string>;
-    export let field: Field<TValues, TValue>;
 
     function toText(value: string) {
         return value;
@@ -18,8 +10,14 @@
         return str;
     }
 
-    let className: string | null = null;
-    export { className as class };
+    interface Props {
+        type?: string;
+        form: Form<TValues, string>;
+        field: Field<TValues, string>;
+        class?: string | null;
+    }
+
+    let { type = 'text', form, field, class: className = null }: Props = $props();
 </script>
 
 <Input {form} {field} {fromText} {toText} {type} class={className} />

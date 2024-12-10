@@ -1,11 +1,11 @@
-import trim from 'lodash/trim';
-import defaultTo from 'lodash/defaultTo';
-import { type Form, type Field, type FormState, type TypeToFields, createProperties } from '$lib';
-import type { Choice } from '$lib/examples/Choice.svelte';
+import trim from 'lodash/trim.js';
+import defaultTo from 'lodash/defaultTo.js';
+import { type Form, type Field, type FormState, type TypeToFields, createProperties } from '$lib/index.js';
+import type { Choice } from '$lib/examples/utils.js';
 
 type Country = 'fr' | 'us' | 'gb' | 'ci' | 'tg' | 'il';
 
-export const countryChoices: Choice<Country>[] = [
+export const countryChoices: readonly Choice<Country>[] = [
     { value: 'fr', key: 'fr', label: 'France' },
     { value: 'us', key: 'us', label: 'États-unis' },
     { value: 'gb', key: 'gb', label: 'Grande-bretagne' },
@@ -40,17 +40,17 @@ export function validate<TValues>(
     const values = fields.self.getValue(state.values);
 
     if (trim(defaultTo(values.street, '')) == '') {
-        state = form.actions().addError(fields.street, 'Ne doit pas être vide.')(state);
+        state = form.actions().addFieldError(fields.street, 'Ne doit pas être vide.')(state);
     }
 
     if (trim(defaultTo(values.city, '')) == '') {
-        state = form.actions().addError(fields.city, 'Ne doit pas être vide.')(state);
+        state = form.actions().addFieldError(fields.city, 'Ne doit pas être vide.')(state);
     }
 
     if (values.country == null) {
-        state = form.actions().addError(fields.country, 'Ne doit pas être vide.')(state);
+        state = form.actions().addFieldError(fields.country, 'Ne doit pas être vide.')(state);
     } else if (values.country == 'fr') {
-        state = form.actions().addError(fields.country, 'Impossible de selectionner la France.')(state);
+        state = form.actions().addFieldError(fields.country, 'Impossible de selectionner la France.')(state);
     }
 
     return state;

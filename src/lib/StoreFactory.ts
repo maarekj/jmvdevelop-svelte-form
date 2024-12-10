@@ -8,21 +8,21 @@ import {
     isSubmitSuccess,
     getNbSubmits,
     formIsDirty,
-    isBlur,
-    hasFocus,
-    isDirty,
-    isAlreadyBlur,
-    hasErrors,
-    getErrors,
-    hasAnyErrors,
-    hasAsyncErrors,
-    getAsyncErrors,
-    isAsyncValidating,
+    fieldIsBlur,
+    fieldHasFocus,
+    fieldIsDirty,
+    fieldIsAlreadyBlur,
+    fieldHasErrors,
+    getFieldErrors,
+    fieldHasAnyErrors,
+    fieldHasAsyncErrors,
+    getFieldAsyncErrors,
+    fieldIsAsyncValidating,
     formIsAsyncValidating,
-} from './selectors';
-import type { Form } from './Form';
+} from './selectors.js';
+import type { Form } from './Form.js';
 import { readable, type Readable } from 'svelte/store';
-import type { Field, FormState } from './Types';
+import type { Field, FormState } from './Types.js';
 
 export class StoreFactory<Values, E> {
     constructor(private form: Form<Values, E>) {}
@@ -43,7 +43,7 @@ export class StoreFactory<Values, E> {
     isDirty<Value>(field: Field<Values, Value> | undefined = undefined): Readable<boolean> {
         return this.custom((state) => {
             if (field !== undefined) {
-                return isDirty(state, field.getKey());
+                return fieldIsDirty(state, field.getKey());
             } else {
                 return formIsDirty(state);
             }
@@ -53,7 +53,7 @@ export class StoreFactory<Values, E> {
     isAlreadyBlur<Value>(field: Field<Values, Value> | undefined = undefined): Readable<boolean> {
         return this.custom((state) => {
             if (field !== undefined) {
-                return isAlreadyBlur(state, field.getKey());
+                return fieldIsAlreadyBlur(state, field.getKey());
             } else {
                 return formIsAlreadyBlur(state);
             }
@@ -61,17 +61,17 @@ export class StoreFactory<Values, E> {
     }
 
     hasFocus<Value>(field: Field<Values, Value>): Readable<boolean> {
-        return this.custom((state) => hasFocus(state, field.getKey()));
+        return this.custom((state) => fieldHasFocus(state, field.getKey()));
     }
 
     isBlur<Value>(field: Field<Values, Value>): Readable<boolean> {
-        return this.custom((state) => isBlur(state, field.getKey()));
+        return this.custom((state) => fieldIsBlur(state, field.getKey()));
     }
 
     isAsyncValidating<Value>(field: Field<Values, Value> | undefined = undefined): Readable<boolean> {
         return this.custom((state) => {
             if (field !== undefined) {
-                return isAsyncValidating(state, field.getKey());
+                return fieldIsAsyncValidating(state, field.getKey());
             } else {
                 return formIsAsyncValidating(state);
             }
@@ -97,7 +97,7 @@ export class StoreFactory<Values, E> {
     hasFieldErrors<Value>(field: Field<Values, Value> | undefined = undefined): Readable<boolean> {
         return this.custom((state) => {
             if (field !== undefined) {
-                return hasErrors(state, field.getKey());
+                return fieldHasErrors(state, field.getKey());
             } else {
                 return formHasFieldErrors(state);
             }
@@ -106,20 +106,20 @@ export class StoreFactory<Values, E> {
 
     fieldErrors<Value>(field: Field<Values, Value>): Readable<E[]> {
         return this.custom((state) => {
-            return getErrors(state, field.getKey());
+            return getFieldErrors(state, field.getKey());
         });
     }
 
     hasFieldAnyErrors<Value>(field: Field<Values, Value>): Readable<boolean> {
-        return this.custom((state) => hasAnyErrors(state, field.getKey()));
+        return this.custom((state) => fieldHasAnyErrors(state, field.getKey()));
     }
 
     hasFieldAsyncErrors<Value>(field: Field<Values, Value>): Readable<boolean> {
-        return this.custom((state) => hasAsyncErrors(state, field.getKey()));
+        return this.custom((state) => fieldHasAsyncErrors(state, field.getKey()));
     }
 
     fieldAsyncErrors<Value>(field: Field<Values, Value>): Readable<E[]> {
-        return this.custom((state) => getAsyncErrors(state, field.getKey()));
+        return this.custom((state) => getFieldAsyncErrors(state, field.getKey()));
     }
 
     hasErrors(): Readable<boolean> {

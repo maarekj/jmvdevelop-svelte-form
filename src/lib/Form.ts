@@ -1,6 +1,6 @@
-import type { Field, MetaFields, FormState, ReadonlyListener, Action } from './Types';
-import { StoreFactory } from './StoreFactory';
-import { ActionFactory } from './ActionFactory';
+import type { Field, MetaFields, FormState, ReadonlyListener, Action } from './Types.js';
+import { StoreFactory } from './StoreFactory.js';
+import { ActionFactory } from './ActionFactory.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsyncValidator<TValues> = (fields: Field<TValues, any>[]) => Promise<unknown>;
