@@ -1,11 +1,13 @@
 import type { Field, MetaFields, FormState, ReadonlyListener, Action } from './Types.js';
 import { StoreFactory } from './StoreFactory.js';
 import { ActionFactory } from './ActionFactory.js';
+import { RunesFactory } from './RunesFactory.svelte.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsyncValidator<TValues> = (fields: Field<TValues, any>[]) => Promise<unknown>;
 
 export class Form<TValues, TError> {
+    private _runes: RunesFactory<TValues, TError> | null = null;
     private _stores: StoreFactory<TValues, TError> | null = null;
     private _actions: ActionFactory<TValues, TError> | null = null;
     private initialState: FormState<TValues, TError>;
@@ -22,8 +24,6 @@ export class Form<TValues, TError> {
         currState: FormState<TValues, TError>,
     ) => FormState<TValues, TError>)[];
 
-    private _id: string;
-
     constructor(
         opts: {
             initialValues: TValues;
@@ -34,7 +34,6 @@ export class Form<TValues, TError> {
             submitting?: boolean;
             nbSubmits?: number;
         },
-        id: string,
     ) {
         this.listeners = [];
         this.validators = [];
@@ -51,11 +50,6 @@ export class Form<TValues, TError> {
             ...opts,
         };
         this.state = { ...this.initialState };
-        this._id = id;
-    }
-
-    public id(): string {
-        return this._id;
     }
 
     removeValidator(validator: Action<TValues, TError>): void {
@@ -162,7 +156,11 @@ export class Form<TValues, TError> {
         return this._stores;
     }
 
-    getFieldId<Value>(field: Field<TValues, Value>): string {
-        return `${this.id()}-${field.getKey()}`;
+    runes(): RunesFactory<TValues, TError> {
+        if (this._runes == null) {
+            this._runes = new RunesFactory(this);
+        }
+
+        return this._runes;
     }
 }

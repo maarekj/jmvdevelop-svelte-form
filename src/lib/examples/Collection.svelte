@@ -1,5 +1,4 @@
 <script lang="ts" generics="TValues, TValue">
-    import { preventDefault } from 'svelte/legacy';
     import type { Snippet } from 'svelte';
 
     import type { Form, Field } from '$lib/index.js';
@@ -28,18 +27,20 @@
         item,
     }: Props = $props();
 
-    let nbSubmits = $derived(form.stores().nbSubmits());
-    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
-    let hasFieldErrors = $derived(form.stores().hasFieldErrors(field));
-    let list = $derived(form.stores().fieldValue(field));
-    let count = $derived($list.length);
+    let nbSubmits = $derived(form.runes().nbSubmits$);
+    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
+    let hasFieldErrors = $derived(form.runes().hasFieldErrors$(field));
+    let list = $derived(form.runes().fieldValue$(field));
+    let count = $derived(list.length);
 
-    function onAddClick() {
+    function onAddClick(event: Event) {
+        event.preventDefault();
         form.dispatch(form.actions().listPushItem(empty, field));
     }
 
     function onRemoveClick(index: number) {
-        return (_event: Event) => {
+        return (event: Event) => {
+            event.preventDefault();
             form.dispatch(form.actions().listRemoveIndex(index, field));
         };
     }
@@ -55,14 +56,14 @@
                 {#if count == 0}
                     {@render placeholder?.()}
                 {:else}
-                    <div class="form" class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasFieldErrors}>
+                    <div class="form" class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}>
                         {#each range(0, count) as index (index)}
                             {@const removeClick = onRemoveClick(index)}
                             <div class="d-flex gap-2">
                                 <div class={itemClass}>
                                     {@render item?.({ index, onRemoveClick: removeClick })}
                                 </div>
-                                <button class={removeBtnClass} onclick={preventDefault(removeClick)}>- Delete</button>
+                                <button class={removeBtnClass} onclick={removeClick}>- Delete</button>
                             </div>
                         {/each}
                     </div>
@@ -70,7 +71,7 @@
                 <FieldErrors {form} {field} />
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick={preventDefault(onAddClick)}>+ Add</button>
+                <button class="btn btn-primary" onclick={onAddClick}>+ Add</button>
             </div>
         </div>
     </div>

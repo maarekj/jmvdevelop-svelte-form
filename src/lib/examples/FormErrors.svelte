@@ -8,16 +8,16 @@
 
     let { form }: Props = $props();
 
-    let nbSubmits = $derived(form.stores().nbSubmits());
-    let hasRootErrors = $derived(form.stores().hasRootErrors());
-    let hasSubmitErrors = $derived(form.stores().hasSubmitErrors());
-    let rootErrors = $derived(form.stores().rootErrors());
-    let submitErrors = $derived(form.stores().submitErrors());
+    let nbSubmits = $derived(form.runes().nbSubmits$);
+    let hasRootErrors = $derived(form.runes().hasRootErrors$);
+    let hasSubmitErrors = $derived(form.runes().hasSubmitErrors$);
+    let rootErrors = $derived(form.runes().rootErrors$);
+    let submitErrors = $derived(form.runes().submitErrors$);
 </script>
 
-{#if $nbSubmits > 0 && ($hasRootErrors || $hasSubmitErrors)}
+{#if nbSubmits > 0 && (hasRootErrors || hasSubmitErrors)}
     <div class="alert alert-danger" in:fade|global>
-        {$rootErrors}
-        {$submitErrors}
+        {rootErrors}
+        {submitErrors}
     </div>
 {/if}

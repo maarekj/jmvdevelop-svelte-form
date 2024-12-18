@@ -9,19 +9,19 @@
 
     let { form, field }: Props = $props();
 
-    let nbSubmits = $derived(form.stores().nbSubmits());
-    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
-    let fieldErrors = $derived(form.stores().fieldErrors(field));
-    let fieldAsyncErrors = $derived(form.stores().fieldAsyncErrors(field));
+    let nbSubmits = $derived(form.runes().nbSubmits$);
+    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
+    let fieldErrors = $derived(form.runes().fieldErrors$(field));
+    let fieldAsyncErrors = $derived(form.runes().fieldAsyncErrors$(field));
 </script>
 
-{#if ($nbSubmits > 0 || $isAlreadyBlur) && $fieldErrors.length != 0}
+{#if (nbSubmits > 0 || isAlreadyBlur) && fieldErrors.length != 0}
     <div class="d-block invalid-feedback" in:fade|global>
-        {$fieldErrors}
+        {fieldErrors}
     </div>
 {/if}
-{#if $fieldAsyncErrors.length != 0}
+{#if fieldAsyncErrors.length != 0}
     <div class="d-block invalid-feedback" in:fade|global>
-        {$fieldAsyncErrors}
+        {fieldAsyncErrors}
     </div>
 {/if}

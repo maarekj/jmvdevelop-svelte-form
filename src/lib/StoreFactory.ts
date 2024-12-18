@@ -60,11 +60,11 @@ export class StoreFactory<Values, E> {
         });
     }
 
-    hasFocus<Value>(field: Field<Values, Value>): Readable<boolean> {
+    fieldHasFocus<Value>(field: Field<Values, Value>): Readable<boolean> {
         return this.custom((state) => fieldHasFocus(state, field.getKey()));
     }
 
-    isBlur<Value>(field: Field<Values, Value>): Readable<boolean> {
+    fieldIsBlur<Value>(field: Field<Values, Value>): Readable<boolean> {
         return this.custom((state) => fieldIsBlur(state, field.getKey()));
     }
 

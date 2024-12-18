@@ -1,9 +1,8 @@
 <script lang="ts" generics="TValues, TValue">
-    import { preventDefault } from 'svelte/legacy';
-
     import type { Form, Field } from '$lib/index.js';
     import { cx } from './cx.js';
     import defaultTo from 'lodash/defaultTo.js';
+    import {getPrefixId} from "$lib/PrefixIdContext.js";
 
     interface Props {
         type?: string;
@@ -22,29 +21,31 @@
         form.dispatch(form.actions().changeValue(fromText(v), field));
     }
 
-    function onBlur() {
+    function onBlur(event: Event) {
+        event.preventDefault();
         form.dispatch(form.actions().blur(field));
     }
 
-    function onFocus() {
+    function onFocus(event: Event) {
+        event.preventDefault();
         form.dispatch(form.actions().focus(field));
     }
 
-    let v = $derived(form.stores().fieldValue(field));
-    let nbSubmits = $derived(form.stores().nbSubmits());
-    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
-    let hasAnyErrors = $derived(form.stores().hasFieldAnyErrors(field));
-    let id = $derived(form.getFieldId(field));
-    let valueText = $derived(defaultTo(toText($v), ''));
+    let v = $derived(form.runes().fieldValue$(field));
+    let nbSubmits = $derived(form.runes().nbSubmits$);
+    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
+    let hasAnyErrors = $derived(form.runes().hasFieldAnyErrors$(field));
+    let id = $derived(`${getPrefixId()}-${field.getKey()}`);
+    let valueText = $derived(defaultTo(toText(v), ''));
 </script>
 
 <input
     {id}
     {type}
     class={cx('form-control', className)}
-    class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasAnyErrors}
+    class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasAnyErrors}
     value={valueText}
-    onfocus={preventDefault(onFocus)}
-    onblur={preventDefault(onBlur)}
+    onfocus={onFocus}
+    onblur={onBlur}
     oninput={onInput}
 />

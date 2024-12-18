@@ -77,9 +77,9 @@ function delay(timeout: number): Promise<void> {
     });
 }
 
-export function createForm(id: string, initialValues: Partial<User> = empty): [Form<User, string>, Fields<User>] {
+export function createForm(initialValues: Partial<User> = empty): [Form<User, string>, Fields<User>] {
     const fields = createFields<User>(createRoot<User>());
-    const form = new Form<User, string>({ initialValues: { ...empty, ...initialValues } }, id);
+    const form = new Form<User, string>({ initialValues: { ...empty, ...initialValues } });
 
     const { addFieldError, addFieldAsyncError, clearFieldAsyncError } = form.actions();
 

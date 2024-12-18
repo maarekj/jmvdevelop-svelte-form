@@ -1,8 +1,9 @@
 <script lang="ts" generics="TValues, TValue extends unknown">
-    import type { Form, Field } from '$lib/index.js';
-    import { fade } from 'svelte/transition';
+    import type {Form, Field} from '$lib/index.js';
+    import {fade} from 'svelte/transition';
     import FieldErrors from './FieldErrors.svelte';
-    import type { Snippet } from 'svelte';
+    import type {Snippet} from 'svelte';
+    import {getPrefixId} from "$lib/PrefixIdContext.js";
 
     interface Props {
         form: Form<TValues, string>;
@@ -13,15 +14,17 @@
         children?: Snippet<[{ field: Field<TValues, TValue> }]>;
     }
 
-    let { form, field, label, id = form.getFieldId(field), class: className = null, children }: Props = $props();
+    let {form, field, label, class: className = null, children}: Props = $props();
 
-    let isAsyncValidating = $derived(form.stores().isAsyncValidating(field));
+    let id = $derived(`${getPrefixId()}-${field.getKey()}`);
+
+    let isAsyncValidating = $derived(form.runes().isAsyncValidating$(field));
 </script>
 
 <div class={className}>
-    <label class={'form-label'} for={id}> {label} </label>
-    {@render children?.({ field })}
-    {#if $isAsyncValidating}
+    <label class={'form-label'} for={id}> {label}</label>
+    {@render children?.({field})}
+    {#if isAsyncValidating}
         <div in:fade|global class="invalid-feedback d-block text-warning-emphasis">validating...</div>
     {/if}
     <FieldErrors {form} {field} />

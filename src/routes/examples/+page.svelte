@@ -1,7 +1,7 @@
 <script lang="ts">
-    import type { Form } from '$lib/index.js';
-    import type { PageData } from './$types.js';
-    import type { User } from './form/User.js';
+    import type {Form} from '$lib/index.js';
+    import type {PageData} from './$types.js';
+    import type {User} from './form/User.js';
     import UserForm from './form/UserForm.svelte';
     import * as z from 'zod';
 
@@ -9,7 +9,7 @@
         data: PageData;
     }
 
-    let { data }: Props = $props();
+    let {data}: Props = $props();
 
     let successMessage: string | null = $state(null);
 
@@ -17,7 +17,7 @@
         const response = await fetch('/examples/form', {
             method: 'POST',
             body: JSON.stringify(form.getState().values),
-            headers: { 'content-type': 'application/json' },
+            headers: {'content-type': 'application/json'},
         });
 
         const json = z
@@ -37,6 +37,6 @@
     {#if successMessage != null}
         <div class="alert alert-success mt-5"><code>{successMessage}</code></div>
     {:else}
-        <UserForm values={data.initialValues} {onSubmit} />
+        <UserForm initialValues={data.initialValues} {onSubmit} />
     {/if}
 </div>

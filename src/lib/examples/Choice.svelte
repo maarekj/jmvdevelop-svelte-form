@@ -2,6 +2,7 @@
     import type { Form, Field } from '$lib/index.js';
     import { cx } from './cx.js';
     import type { Choice } from '$lib/examples/utils.js';
+    import {getPrefixId} from "$lib/PrefixIdContext.js";
 
     interface Props {
         expanded?: boolean;
@@ -41,19 +42,19 @@
         form.dispatch(form.actions().focus(field));
     }
 
-    let v = $derived(form.stores().fieldValue(field));
-    let nbSubmits = $derived(form.stores().nbSubmits());
-    let isAlreadyBlur = $derived(form.stores().isAlreadyBlur(field));
-    let hasFieldErrors = $derived(form.stores().hasFieldErrors(field));
-    let id = $derived(form.getFieldId(field));
-    let choice = $derived(choices.find((choice) => choice.value == $v));
+    let v = $derived(form.runes().fieldValue$(field));
+    let nbSubmits = $derived(form.runes().nbSubmits$);
+    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
+    let hasFieldErrors = $derived(form.runes().hasFieldErrors$(field));
+    let id = $derived(`${getPrefixId()}-${field.getKey()}`);
+    let choice = $derived(choices.find((choice) => choice.value == v));
 </script>
 
 {#if expanded == false}
     <select
         {id}
         class={cx('form-select', className)}
-        class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasFieldErrors}
+        class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}
         value={choice?.key}
         onfocus={onFocus}
         onblur={onBlur}
@@ -64,7 +65,7 @@
         {/each}
     </select>
 {:else}
-    <div class:is-invalid={($nbSubmits > 0 || $isAlreadyBlur) && $hasFieldErrors}>
+    <div class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}>
         {#each choices as c (c.key)}
             <div class="form-check">
                 <input
