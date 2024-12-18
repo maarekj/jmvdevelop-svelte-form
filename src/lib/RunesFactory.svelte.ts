@@ -20,25 +20,23 @@ import {
     fieldIsAsyncValidating,
     formIsAsyncValidating,
 } from './selectors.js';
-import type { Form } from './Form.js';
-import type { Field, FormState } from './Types.js';
+import type {Form} from './Form.js';
+import type {Field, FormState} from './Types.js';
+import {ReactiveValue} from './ReactiveValue.js';
 
 export class RunesFactory<Values, E> {
-    #formState$: () => FormState<Values, E>;
+    #formState: ReactiveValue<FormState<Values, E>>;
 
-    constructor(private form: Form<Values, E>) {
-        let formState$ = $state.raw(this.form.getState());
-        this.#formState$ = () => formState$;
-
-        $effect(() => {
-            return this.form.addReadonlyListener((state) => {
-                formState$ = state;
-            });
+    constructor(private readonly form: Form<Values, E>) {
+        this.#formState = new ReactiveValue(() => {
+            return form.getState();
+        }, (update) => {
+            return this.form.addReadonlyListener(() => update());
         });
     }
 
     get formState$() {
-        return this.#formState$();
+        return this.#formState.current;
     }
 
     isDirty$<Value>(field: Field<Values, Value> | undefined = undefined): boolean {

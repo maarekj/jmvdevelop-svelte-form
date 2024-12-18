@@ -24,11 +24,9 @@
         }
     }: Props = $props();
 
-    const [form, fields] = createForm(initialValues);
+    let [form, fields] = createForm(initialValues);
 
     let hidden = $state(false);
-
-    let prefixId = $state("user-")
 
     $inspect(form.runes().formValues$);
 </script>
@@ -38,8 +36,6 @@
 </pre>
 
 <button class="btn btn-light" onclick={() => (hidden = !hidden)}>Toggle the form</button>
-
-<input bind:value={prefixId} />
 
 {#if !hidden}
     <div class="modal position-static d-block">
