@@ -2,7 +2,7 @@ import {getContext, hasContext, setContext} from 'svelte';
 
 const symbol = Symbol('jmvdevelop-svelte-form inc context');
 
-export class IncrContext {
+export class IncrHolder {
     private currentValue: number = 0;
 
     constructor() {
@@ -14,14 +14,14 @@ export class IncrContext {
     }
 }
 
-export function getIncrContext(): IncrContext {
+export function getIncrHolder(): IncrHolder {
     if (hasContext(symbol)) {
         return getContext(symbol);
     } else {
-        throw new Error("IncrContext must be used.");
+        throw new Error("IncrHolderContext must be used.");
     }
 }
 
-export function setIncrContext(instance: IncrContext) {
+export function setIncrHolder(instance: IncrHolder) {
     setContext(symbol, instance);
 }
