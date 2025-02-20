@@ -1,14 +1,14 @@
 import trim from 'lodash/trim.js';
 import defaultTo from 'lodash/defaultTo.js';
-import { Form, createRoot, createListItem, createProperties, createDebouncedValidator } from '$lib/index.js';
-import type { Field, FormState, TypeToFields } from '$lib/index.js';
+import {Form, createRoot, createListItem, createProperties, createDebouncedValidator} from '$lib/index.js';
+import type {Field, FormState, TypeToFields} from '$lib/index.js';
 import * as address from './Address.js';
-import type { Choice } from '$lib/examples/utils.js';
+import type {Choice} from '$lib/examples/utils.js';
 
 type Gender = 'm' | 'f';
 export const genderChoices: Choice<Gender>[] = [
-    { value: 'f', key: 'f', label: 'female' },
-    { value: 'm', key: 'm', label: 'male' },
+    {value: 'f', key: 'f', label: 'female'},
+    {value: 'm', key: 'm', label: 'male'},
 ];
 
 export type User = {
@@ -79,9 +79,9 @@ function delay(timeout: number): Promise<void> {
 
 export function createForm(initialValues: Partial<User> = empty): [Form<User, string>, Fields<User>] {
     const fields = createFields<User>(createRoot<User>());
-    const form = new Form<User, string>({ initialValues: { ...empty, ...initialValues } });
+    const form = new Form<User, string>({initialValues: {...empty, ...initialValues}});
 
-    const { addFieldError, addFieldAsyncError, clearFieldAsyncError } = form.actions();
+    const {addFieldError, addFieldAsyncError, clearFieldAsyncError} = form.actions();
 
     form.addAsyncValidator(
         createDebouncedValidator(form, fields.username, 500, async () => {
@@ -95,6 +95,8 @@ export function createForm(initialValues: Partial<User> = empty): [Form<User, st
 
                 return state;
             };
+        }, (error: unknown) => {
+            return typeof error === 'string' ? error : "Unknown error";
         }),
     );
 
