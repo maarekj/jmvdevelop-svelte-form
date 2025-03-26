@@ -1,10 +1,17 @@
-import type { Field, MetaFields, FormState, ReadonlyListener, Action } from './Types.js';
-import { StoreFactory } from './StoreFactory.js';
-import { ActionFactory } from './ActionFactory.js';
-import { RunesFactory } from './RunesFactory.svelte.js';
+import type {Field, MetaFields, FormState, ReadonlyListener, Action} from './Types.js';
+import {StoreFactory} from './StoreFactory.js';
+import {ActionFactory} from './ActionFactory.js';
+import {RunesFactory} from './RunesFactory.svelte.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AsyncValidator<TValues> = (fields: Field<TValues, any>[]) => Promise<unknown>;
+
+type OnChangeValueCallback<TValues, TError> = ((
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    keys: Field<TValues, any>[],
+    prevState: FormState<TValues, TError>,
+    currState: FormState<TValues, TError>,
+) => FormState<TValues, TError>)
 
 export class Form<TValues, TError> {
     private _runes: RunesFactory<TValues, TError> | null = null;
@@ -17,12 +24,7 @@ export class Form<TValues, TError> {
     private validators: Action<TValues, TError>[];
     private asyncValidators: AsyncValidator<TValues>[];
 
-    private onChangeValue: ((
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        keys: Field<TValues, any>[],
-        prevState: FormState<TValues, TError>,
-        currState: FormState<TValues, TError>,
-    ) => FormState<TValues, TError>)[];
+    private onChangeValue: OnChangeValueCallback<TValues, TError>[];
 
     constructor(
         opts: {
@@ -49,7 +51,7 @@ export class Form<TValues, TError> {
             fields: {},
             ...opts,
         };
-        this.state = { ...this.initialState };
+        this.state = {...this.initialState};
     }
 
     removeValidator(validator: Action<TValues, TError>): void {
@@ -58,7 +60,7 @@ export class Form<TValues, TError> {
         });
     }
 
-    addValidator(validator: Action<TValues, TError>) {
+    addValidator(validator: Action<TValues, TError>): () => void {
         this.dispatch(validator);
         this.validators = [...this.validators, validator];
 
@@ -75,7 +77,7 @@ export class Form<TValues, TError> {
         });
     }
 
-    addAsyncValidator(validator: AsyncValidator<TValues>) {
+    addAsyncValidator(validator: AsyncValidator<TValues>): () => void {
         this.asyncValidators = [...this.asyncValidators, validator];
 
         return () => this.removeAsyncValidator(validator);
@@ -94,15 +96,15 @@ export class Form<TValues, TError> {
         return this.onChangeValue;
     }
 
-    addOnChangeValues(
-        callback: (
-            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-            fields: Field<TValues, any>[],
-            prevState: FormState<TValues, TError>,
-            currState: FormState<TValues, TError>,
-        ) => FormState<TValues, TError>,
-    ) {
+    addOnChangeValues(callback: OnChangeValueCallback<TValues, TError>): () => void {
         this.onChangeValue = [...this.onChangeValue, callback];
+        return () => this.removeOnChangeValues(callback);
+    }
+
+    removeOnChangeValues(callback: OnChangeValueCallback<TValues, TError>): void {
+        this.onChangeValue = this.onChangeValue.filter((c) => {
+            return c !== callback;
+        })
     }
 
     removeListener(listener: Action<TValues, TError>): void {
