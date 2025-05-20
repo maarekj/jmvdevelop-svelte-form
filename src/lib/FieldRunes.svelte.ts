@@ -40,7 +40,7 @@ export class FieldRunes<Values, Value, E> {
         this.form = $derived(extract(formProp));
         this.field = $derived(extract(fieldProp));
 
-        this.#formState = $state(extract(formProp).getState());
+        this.#formState = $state.raw(extract(formProp).getState());
         this.key = $derived(this.field.getKey());
 
         this.formValues = $derived(this.formState.values);
