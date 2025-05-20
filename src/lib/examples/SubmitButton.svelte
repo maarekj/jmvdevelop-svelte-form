@@ -1,5 +1,5 @@
 <script lang="ts" generics="TValues, TError extends unknown">
-    import type { Form } from '$lib/index.js';
+    import { type Form, FormRunes } from '$lib/index.js';
 
     interface Props {
         class?: string;
@@ -17,9 +17,9 @@
         onclick = undefined,
     }: Props = $props();
 
-    let isSubmitting = $derived(form.runes().isSubmitting$);
+    const runes = new FormRunes(() => form);
 </script>
 
 <button type="submit" class={className} {onclick}>
-    {isSubmitting ? submittingText : text}
+    {runes.isSubmitting ? submittingText : text}
 </button>

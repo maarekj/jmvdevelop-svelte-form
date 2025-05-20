@@ -1,7 +1,7 @@
 import debounce from 'lodash/debounce.js';
-import type {AsyncValidator} from './Form.js';
-import type {Form} from './Form.js';
-import type {Action, Field} from './Types.js';
+import type { AsyncValidator } from './Form.js';
+import type { Form } from './Form.js';
+import type { Action, Field } from './Types.js';
 
 export function createDebouncedValidator<TFormValues, TValue, TError>(
     form: Form<TFormValues, TError>,

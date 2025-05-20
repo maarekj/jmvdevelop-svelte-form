@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type {Snippet} from 'svelte';
-    import {IncrHolderContext} from "$lib/index.js";
+    import type { Snippet } from 'svelte';
+    import { IncrHolderContext } from '$lib/index.js';
 
     interface Props {
         children?: Snippet;
     }
 
-    let {children}: Props = $props();
+    let { children }: Props = $props();
 </script>
 
 <IncrHolderContext>

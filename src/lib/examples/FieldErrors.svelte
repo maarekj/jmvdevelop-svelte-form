@@ -1,5 +1,5 @@
 <script lang="ts" generics="TValues, TValue = unknown">
-    import type { Form, Field } from '$lib/index.js';
+    import { type Form, type Field, FormRunes, FieldRunes } from '$lib/index.js';
     import { fade } from 'svelte/transition';
 
     interface Props {
@@ -9,19 +9,20 @@
 
     let { form, field }: Props = $props();
 
-    let nbSubmits = $derived(form.runes().nbSubmits$);
-    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
-    let fieldErrors = $derived(form.runes().fieldErrors$(field));
-    let fieldAsyncErrors = $derived(form.runes().fieldAsyncErrors$(field));
+    const runes = new FormRunes(() => form);
+    const fieldRunes = new FieldRunes(
+        () => form,
+        () => field,
+    );
 </script>
 
-{#if (nbSubmits > 0 || isAlreadyBlur) && fieldErrors.length != 0}
+{#if (runes.nbSubmits > 0 || fieldRunes.isAlreadyBlur) && fieldRunes.errors.length != 0}
     <div class="d-block invalid-feedback" in:fade|global>
-        {fieldErrors}
+        {fieldRunes.errors}
     </div>
 {/if}
-{#if fieldAsyncErrors.length != 0}
+{#if fieldRunes.asyncErrors.length != 0}
     <div class="d-block invalid-feedback" in:fade|global>
-        {fieldAsyncErrors}
+        {fieldRunes.asyncErrors}
     </div>
 {/if}

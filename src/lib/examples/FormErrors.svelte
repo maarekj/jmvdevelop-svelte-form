@@ -1,5 +1,5 @@
 <script lang="ts" generics="TValues">
-    import type { Form } from '$lib/index.js';
+    import { type Form, FormRunes } from '$lib/index.js';
     import { fade } from 'svelte/transition';
 
     interface Props {
@@ -8,16 +8,12 @@
 
     let { form }: Props = $props();
 
-    let nbSubmits = $derived(form.runes().nbSubmits$);
-    let hasRootErrors = $derived(form.runes().hasRootErrors$);
-    let hasSubmitErrors = $derived(form.runes().hasSubmitErrors$);
-    let rootErrors = $derived(form.runes().rootErrors$);
-    let submitErrors = $derived(form.runes().submitErrors$);
+    const runes = new FormRunes(() => form);
 </script>
 
-{#if nbSubmits > 0 && (hasRootErrors || hasSubmitErrors)}
+{#if runes.nbSubmits > 0 && (runes.hasRootErrors || runes.hasSubmitErrors)}
     <div class="alert alert-danger" in:fade|global>
-        {rootErrors}
-        {submitErrors}
+        {runes.rootErrors}
+        {runes.submitErrors}
     </div>
 {/if}

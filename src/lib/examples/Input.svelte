@@ -1,8 +1,9 @@
 <script lang="ts" generics="TValues, TValue">
-    import type { Form, Field } from '$lib/index.js';
+    import { type Form, type Field, FormRunes } from '$lib/index.js';
     import { cx } from './cx.js';
     import defaultTo from 'lodash/defaultTo.js';
-    import {getPrefixId} from "$lib/PrefixIdContext.js";
+    import { getPrefixId } from '$lib/PrefixIdContext.js';
+    import { FieldRunes } from '$lib/FieldRunes.svelte.js';
 
     interface Props {
         type?: string;
@@ -15,36 +16,36 @@
 
     let { type = 'text', form, field, toText, fromText, class: className = null }: Props = $props();
 
+    const runes = new FormRunes(() => form);
+    const fieldRunes = new FieldRunes(
+        () => form,
+        () => field,
+    );
+
     function onInput(event: Event) {
         const target = event.target as HTMLInputElement;
         const v = defaultTo(target.value, '');
-        form.dispatch(form.actions().changeValue(fromText(v), field));
+
+        fieldRunes.changeValue(fromText(v));
     }
 
     function onBlur(event: Event) {
         event.preventDefault();
-        form.dispatch(form.actions().blur(field));
+        fieldRunes.blur();
     }
 
     function onFocus(event: Event) {
         event.preventDefault();
-        form.dispatch(form.actions().focus(field));
+        fieldRunes.focus();
     }
-
-    let v = $derived(form.runes().fieldValue$(field));
-    let nbSubmits = $derived(form.runes().nbSubmits$);
-    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
-    let hasAnyErrors = $derived(form.runes().hasFieldAnyErrors$(field));
-    let id = $derived(`${getPrefixId()}-${field.getKey()}`);
-    let valueText = $derived(defaultTo(toText(v), ''));
 </script>
 
 <input
-    {id}
+    id={`${getPrefixId()}-${fieldRunes.key}`}
     {type}
     class={cx('form-control', className)}
-    class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasAnyErrors}
-    value={valueText}
+    class:is-invalid={(runes.nbSubmits > 0 || fieldRunes.isAlreadyBlur) && fieldRunes.hasAnyErrors}
+    value={defaultTo(toText(fieldRunes.value), '')}
     onfocus={onFocus}
     onblur={onBlur}
     oninput={onInput}

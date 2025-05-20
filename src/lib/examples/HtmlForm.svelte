@@ -1,7 +1,7 @@
 <script lang="ts" generics="TValues">
-    import {type Form, formHasErrors} from '$lib/index.js';
-    import PrefixIdContext from "$lib/PrefixIdContext.svelte";
-    import type {Snippet} from "svelte";
+    import { type Form, formHasErrors } from '$lib/index.js';
+    import PrefixIdContext from '$lib/PrefixIdContext.svelte';
+    import type { Snippet } from 'svelte';
 
     interface Props {
         class?: string;
@@ -12,13 +12,11 @@
     }
 
     let {
-        class:
-            className = 'btn btn-primary',
+        class: className = 'btn btn-primary',
         form,
         prefixId: formPrefixId,
         children: formChildren,
-        onSubmit = async () => {
-        },
+        onSubmit = async () => {},
     }: Props = $props();
 
     const actions = form.actions();

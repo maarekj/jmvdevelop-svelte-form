@@ -1,7 +1,7 @@
 <script lang="ts" generics="TValues, TValue">
     import type { Snippet } from 'svelte';
 
-    import type { Form, Field } from '$lib/index.js';
+    import { type Form, type Field, FormRunes, FieldRunes } from '$lib/index.js';
     import range from 'lodash/range.js';
     import FieldErrors from './FieldErrors.svelte';
 
@@ -27,10 +27,13 @@
         item,
     }: Props = $props();
 
-    let nbSubmits = $derived(form.runes().nbSubmits$);
-    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
-    let hasFieldErrors = $derived(form.runes().hasFieldErrors$(field));
-    let list = $derived(form.runes().fieldValue$(field));
+    const runes = new FormRunes(() => form);
+    const fieldRunes = new FieldRunes(
+        () => form,
+        () => field,
+    );
+
+    let list = $derived(fieldRunes.value);
     let count = $derived(list.length);
 
     function onAddClick(event: Event) {
@@ -56,7 +59,10 @@
                 {#if count == 0}
                     {@render placeholder?.()}
                 {:else}
-                    <div class="form" class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}>
+                    <div
+                        class="form"
+                        class:is-invalid={(runes.nbSubmits > 0 || fieldRunes.isAlreadyBlur) && fieldRunes.hasErrors}
+                    >
                         {#each range(0, count) as index (index)}
                             {@const removeClick = onRemoveClick(index)}
                             <div class="d-flex gap-2">

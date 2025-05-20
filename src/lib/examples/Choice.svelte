@@ -1,8 +1,10 @@
 <script lang="ts" generics="TValues, TValue">
-    import type { Form, Field } from '$lib/index.js';
+    import { type Form, type Field } from '$lib/index.js';
     import { cx } from './cx.js';
     import type { Choice } from '$lib/examples/utils.js';
-    import {getPrefixId} from "$lib/PrefixIdContext.js";
+    import { getPrefixId } from '$lib/PrefixIdContext.js';
+    import { FormRunes } from '$lib/FormRunes.svelte.js';
+    import { FieldRunes } from '$lib/FieldRunes.svelte.js';
 
     interface Props {
         expanded?: boolean;
@@ -14,13 +16,19 @@
 
     let { expanded = false, form, field, choices, class: className = null }: Props = $props();
 
+    const runes = new FormRunes(() => form);
+    const fieldRunes = new FieldRunes(
+        () => form,
+        () => field,
+    );
+
     function onSelectInput(event: Event) {
         const target = event.target as HTMLSelectElement;
         const key = target.value;
         const choice = choices.find((choice) => choice.key == key);
 
         if (choice != null) {
-            form.dispatch(form.actions().changeValue(choice.value, field));
+            fieldRunes.changeValue(choice.value);
         }
     }
 
@@ -30,31 +38,27 @@
         const choice = choices.find((choice) => choice.key == key);
 
         if (choice != null) {
-            form.dispatch(form.actions().changeValue(choice.value, field));
+            fieldRunes.changeValue(choice.value);
         }
     }
 
     function onBlur() {
-        form.dispatch(form.actions().blur(field));
+        fieldRunes.blur();
     }
 
     function onFocus() {
-        form.dispatch(form.actions().focus(field));
+        fieldRunes.focus();
     }
 
-    let v = $derived(form.runes().fieldValue$(field));
-    let nbSubmits = $derived(form.runes().nbSubmits$);
-    let isAlreadyBlur = $derived(form.runes().isAlreadyBlur$(field));
-    let hasFieldErrors = $derived(form.runes().hasFieldErrors$(field));
     let id = $derived(`${getPrefixId()}-${field.getKey()}`);
-    let choice = $derived(choices.find((choice) => choice.value == v));
+    let choice = $derived(choices.find((choice) => choice.value == fieldRunes.value));
 </script>
 
 {#if expanded == false}
     <select
         {id}
         class={cx('form-select', className)}
-        class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}
+        class:is-invalid={(runes.nbSubmits > 0 || fieldRunes.isAlreadyBlur) && fieldRunes.hasErrors}
         value={choice?.key}
         onfocus={onFocus}
         onblur={onBlur}
@@ -65,7 +69,7 @@
         {/each}
     </select>
 {:else}
-    <div class:is-invalid={(nbSubmits > 0 || isAlreadyBlur) && hasFieldErrors}>
+    <div class:is-invalid={(runes.nbSubmits > 0 || fieldRunes.isAlreadyBlur) && fieldRunes.hasErrors}>
         {#each choices as c (c.key)}
             <div class="form-check">
                 <input
